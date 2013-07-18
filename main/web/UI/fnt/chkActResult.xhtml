@@ -1,0 +1,136 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/templates/ui.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .col-95 {
+                width: 95%;
+            }
+
+            .col-5 {
+                width: 5%;
+            }
+
+            .col-label {
+                text-align: right;
+            }
+
+            .col-input {
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="content">
+        <div style="margin:5px;">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="false" life="3000"/>
+
+                <div id="header">
+                    <p:fieldset>
+                        <h:panelGrid columns="2" cellspacing="5" columnClasses="col-95,col-5">
+                            <h:panelGrid columns="4" cellspacing="5">
+                                <h:outputLabel value="对账日期:"/>
+                                <p:inputText id="startDate" value="#{chkActAction.date8}"
+                                             required="true"
+                                             onclick="WdatePicker({dateFmt:'yyyyMMdd'})"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <p:commandButton id="getbtn" style="width:90px;" value="查询"
+                                                 action="#{chkActAction.onQuery}"
+                                                 update="pdt,msgs">
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </p:fieldset>
+                </div>
+                <p:fieldset legend="昨日对账结果">
+                    <h:panelGrid columns="6" cellpadding="0" cellspacing="5" border="0" style="width:100%;"
+                                 columnClasses="col-label, col-input, col-label, col-input, col-label, col-input">
+                        <h:outputLabel value="行名:"/>
+                        <h:outputText value="#{chkActAction.sysCtl.bankName}[#{chkActAction.sysCtl.bankId}]"/>
+                        <h:outputLabel value="主机对账结果:"/>
+                        <h:outputText
+                                value="#{chkActAction.sysCtlChkSts.valueOfAlias(chkActAction.sysCtl.cbsChkSts).title}"/>
+                        <h:outputLabel value="市财政对账结果:"/>
+                        <h:outputText
+                                value="#{chkActAction.sysCtlChkSts.valueOfAlias(chkActAction.sysCtl.wsysChkSts).title}"/>
+                        <h:outputLabel value="当前交易日期:"/>
+                        <h:outputText value="#{chkActAction.sysCtl.txnDate}"/>
+                        <h:outputLabel value="主机对账时间:"/>
+                        <h:outputText value="#{chkActAction.sysCtl.hostChkDt}"/>
+                        <h:outputLabel value="市财政对账时间:"/>
+                        <h:outputText value="#{chkActAction.sysCtl.wsysChkDt}"/>
+                        <h:outputLabel value="主机记账账号:"/>
+                        <h:outputText value="#{chkActAction.sysCtl.cbsActno}"/>
+                        <h:outputLabel value="主机记账账户名:"/>
+                        <h:outputText value="#{chkActAction.sysCtl.cbsActnam}"/>
+                        <h:outputLabel value="备注:"/>
+                        <h:outputText value="#{chkActAction.sysCtl.remark}"/>
+
+                    </h:panelGrid>
+                </p:fieldset>
+                <p:separator/>
+                <p:ajaxStatus style="height:20px;text-align:center">
+                    <f:facet name="start">
+                        <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+                    </f:facet>
+                    <f:facet name="complete">
+                        <h:outputText value=""/>
+                    </f:facet>
+                </p:ajaxStatus>
+
+                <p:dataTable id="pdt" style="width:100%;"
+                             value="#{chkActAction.chkVchList}" var="record"
+                             paginatorTemplate="{RowsPerPageDropdown}"
+                             currentPageReportTemplate="共#{fn:length(chkActAction.chkVchList)}笔明细"
+                             paginator="true" rows="10" rowKey="#{record.pkid}"
+                             paginatorPosition="bottom" selection="#{chkActAction.selectedRecords}"
+                             rowsPerPageTemplate="100,50,30,15,10,5"
+                             emptyMessage="数据记录为空...">
+                    <p:column headerText="票据种类" style="text-align: left">
+                        <h:outputText value="#{record.pjzl}"/>
+                    </p:column>
+                    <p:column headerText="缴款书编号" style="text-align: center">
+                        <h:outputText value="#{record.jksbh}"/>
+                    </p:column>
+                    <p:column headerText="执收单位编码" style="text-align: center">
+                        <h:outputText value="#{record.wtzsdwbm}"/>
+                    </p:column>
+                    <p:column headerText="收入项目编码" style="text-align: center">
+                        <h:outputText value="#{record.srxmbm}"/>
+                    </p:column>
+                    <p:column headerText="数量" style="text-align: center">
+                        <h:outputText value="#{record.sl}"/>
+                    </p:column>
+                    <p:column headerText="金额" style="text-align: right">
+                        <h:outputText value="#{record.je}">
+                            <f:convertNumber pattern="###,###,##0.00"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="缴款方式" style="text-align: center">
+                        <h:outputText value="#{chkActAction.payType.valueOfAlias(record.jkfs).title}"/>
+                    </p:column>
+                    <p:column headerText="对账结果" style="text-align: center">
+                        <h:outputText value="#{chkActAction.chkVchSts.valueOfAlias(record.chkSts).title}"/>
+                    </p:column>
+                    <p:column headerText="失败原因" style="text-align: center">
+                        <h:outputText value="#{record.dzsbyy}"/>
+                    </p:column>
+                    <p:column headerText="对账日期" style="text-align: center">
+                        <h:outputText value="#{record.chkDate}"/>
+                    </p:column>
+                    <p:column headerText="数据所属" style="text-align: center">
+                        <h:outputText value="#{chkActAction.dataSysId.valueOfAlias(record.dataSysId).title}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

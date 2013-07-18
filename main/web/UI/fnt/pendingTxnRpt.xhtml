@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/templates/ui.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .col-95 {
+                width: 95%;
+            }
+
+            .col-5 {
+                width: 5%;
+            }
+
+            .col-label {
+                text-align: right;
+            }
+
+            .col-input {
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="content">
+        <div style="margin:5px;">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="false" life="3000"/>
+
+                <div id="header">
+                    <p:fieldset>
+                        <h:panelGrid columns="2" cellspacing="5" columnClasses="col-95,col-5">
+                            <h:panelGrid columns="2" cellspacing="5">
+                                <h:outputLabel value="日期:"/>
+                                <p:inputText id="startDate" value="#{pendingTxnRptAction.date8}"
+                                             required="true"
+                                             onclick="WdatePicker({dateFmt:'yyyyMMdd'})"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" cellspacing="5">
+                                <p:commandButton id="qrybtn" style="width:90px;" value="查询"
+                                                 action="#{pendingTxnRptAction.onQryPendingTxnRpt}"
+                                                 update="pdt,msgs">
+                                </p:commandButton>
+                                <p:commandButton id="getbtn" style="width:90px;" value="导出Excel"
+                                                 action="#{pendingTxnRptAction.onGenPendingTxnRpt}"
+                                                 ajax="false">
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </p:fieldset>
+                </div>
+                <p:separator/>
+                <p:ajaxStatus style="height:20px;text-align:center">
+                    <f:facet name="start">
+                        <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+                    </f:facet>
+                    <f:facet name="complete">
+                        <h:outputText value=""/>
+                    </f:facet>
+                </p:ajaxStatus>
+
+                <p:dataTable id="pdt" style="width:100%;"
+                             value="#{pendingTxnRptAction.txnList}" var="record"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                             currentPageReportTemplate="共#{fn:length(pendingTxnRptAction.txnList)}笔明细"
+                             paginator="true" rows="15"
+                             paginatorPosition="bottom"
+                             rowsPerPageTemplate="100,50,30,15,5"
+                             emptyMessage="数据记录为空...">
+                    <p:column headerText="业务序号" style="text-align: left">
+                        <h:outputText value="#{record.bmkywxh}"/>
+                    </p:column>
+                    <p:column headerText="增加额" style="text-align: right">
+                        <h:outputText value="#{record.addAmt}">
+                            <f:convertNumber pattern="###,###,##0.00"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="确认额" style="text-align: right">
+                        <h:outputText value="#{record.addConfirmAmt}">
+                            <f:convertNumber pattern="###,###,##0.00"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="减少额" style="text-align: right">
+                        <h:outputText value="#{record.subAmt}">
+                            <f:convertNumber pattern="###,###,##0.00"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="备注" style="text-align: center">
+                        <h:outputText value="#{record.remark}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

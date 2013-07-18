@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/templates/ui.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .col-label {
+                text-align: right;
+            }
+
+            .col-item {
+                text-align: right;
+                width: 125px;
+            }
+
+            .col-item2 {
+                text-align: right;
+                width: 191px;
+            }
+
+            .col-item3 {
+                text-align: right;
+                width: 200px;
+            }
+
+            .col-item-input {
+                text-align: left;
+            }
+        </style>
+        <script language="JavaScript" type="text/JavaScript">
+            document.onkeydown = function TabReplace() {
+                if (event.keyCode == 13) {
+                    event.keyCode = 9;
+                }
+            }
+        </script>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:ajaxStatus style="height:18px;text-align:center">
+                <f:facet name="start">
+                    <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+                </f:facet>
+                <f:facet name="complete">
+                    <h:outputText value=""/>
+                </f:facet>
+            </p:ajaxStatus>
+            <p:panel>
+                <p:focus for="jyrq"/>
+                <p:messages id="msgs" showDetail="false"/>
+                <h:panelGrid id="dataPanel" columns="2" style="width: 100%;">
+                    <h:panelGrid id="infoPanel" columns="4" cellpadding="0" cellspacing="5" border="0"
+                                 style="width:70%;"
+                                 columnClasses="col-label, col-item-input, col-label, col-item-input">
+                        <h:outputLabel value="行政区划:" style="text-align: right;margin-left: 81px;"/>
+                        <p:inputText id="xzqh" value="#{pendingVchAction.txn.xzqh}" readonly="true"/>
+                        <h:outputLabel value="*业务序号:"/>
+                        <p:inputText id="bmkywxh" value="#{pendingVchAction.txn.bmkywxh}" required="true" requiredMessage="必须输入不明款业务序号。"/>
+                        <h:outputLabel value="*缴款方式:"/>
+                        <p:selectOneMenu value="#{pendingVchAction.txn.jkfs}" style="width: 150px;">
+                            <f:selectItems value="#{pendingVchAction.payMethodOptions}"/>
+                        </p:selectOneMenu>
+                        <h:outputLabel value="*交易日期:"/>
+                        <p:inputText id="jyrq" value="#{pendingVchAction.txn.jyrq}" required="true"
+                                     requiredMessage="必须输入交易日期。" onclick="WdatePicker({dateFmt:'yyyyMMdd'})"/>
+                        <h:outputLabel value="*金额:"/>
+                        <p:inputText value="#{pendingVchAction.txn.je}" required="true" requiredMessage="必须输入金额.">
+                            <f:convertNumber pattern="###,###,##0.00"/>
+                        </p:inputText>
+                        <h:outputLabel value="用途:"/>
+                        <p:inputText value="#{pendingVchAction.txn.yt}"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="width: 30%">
+                        <p:commandButton id="paybtn" style="text-align: center;width: 100px;"
+                                         action="#{pendingVchAction.onSendTxn}"
+                                         value="上传" update="pdt,msgs"/>
+                    </h:panelGrid>
+
+                </h:panelGrid>
+            </p:panel>
+            <p:separator/>
+            <p:dataTable id="pdt" style="width:100%;"
+                         value="#{pendingVchAction.txnList}" var="record"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                         currentPageReportTemplate="共#{fn:length(pendingVchAction.txnList)}笔明细"
+                         paginator="true" rows="15"
+                         paginatorPosition="bottom"
+                         rowsPerPageTemplate="100,50,30,15,5"
+                         emptyMessage="数据记录为空...">
+                <p:column headerText="交易日期" style="text-align: left">
+                    <h:outputText value="#{record.jyrq}"/>
+                </p:column>
+                <p:column headerText="不明款业务序号" style="text-align: right">
+                    <h:outputText value="#{record.bmkywxh}"/>
+                </p:column>
+                <p:column headerText="交易金额" style="text-align: right">
+                    <h:outputText value="#{record.je}">
+                        <f:convertNumber pattern="###,###,##0.00"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="缴款方式" style="text-align: right">
+                    <h:outputText value="#{pendingVchAction.txnType.valueOfAlias(record.jkfs).title}"/>
+                </p:column>
+                <p:column headerText="用途" style="text-align: center">
+                    <h:outputText value="#{record.yt}"/>
+                </p:column>
+            </p:dataTable>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

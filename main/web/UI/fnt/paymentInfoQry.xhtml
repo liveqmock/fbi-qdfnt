@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/templates/ui.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .col-95 {
+                width: 95%;
+            }
+
+            .col-5 {
+                width: 5%;
+            }
+
+            .col-label {
+                text-align: right;
+            }
+
+            .col-input {
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="content">
+        <div style="margin:5px;">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="false" life="3000"/>
+
+                <div id="header">
+                    <p:fieldset>
+                        <h:panelGrid columns="2" cellspacing="5" columnClasses="col-95,col-5">
+                            <h:panelGrid columns="2" cellspacing="5">
+                                <h:outputLabel value="日期:"/>
+                                <p:inputText id="startDate" value="#{paymentInfoQryAction.date8}"
+                                             required="true"
+                                             onclick="WdatePicker({dateFmt:'yyyyMMdd'})"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="1" cellspacing="5">
+                                <p:commandButton id="qrybtn" style="width:90px;" value="查询"
+                                                 action="#{paymentInfoQryAction.onQry}"
+                                                 update="pdt,msgs,infopanel">
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </p:fieldset>
+                </div>
+                <p:separator/>
+                <p:ajaxStatus style="height:20px;text-align:center">
+                    <f:facet name="start">
+                        <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+                    </f:facet>
+                    <f:facet name="complete">
+                        <h:outputText value=""/>
+                    </f:facet>
+                </p:ajaxStatus>
+                <p:panel id="infopanel">
+                    <h:panelGrid columns="4" cellpadding="5">
+                        <h:outputLabel value="笔数："/>
+                        <h:outputText value="#{paymentInfoQryAction.infoCnt}"/>
+                        <h:outputLabel value="总金额："/>
+                        <h:outputText value="#{paymentInfoQryAction.totalAmt}">
+                            <f:convertNumber pattern="###,###,##0.00"/>
+                        </h:outputText>
+                    </h:panelGrid>
+                </p:panel>
+                <br/>
+                <p:dataTable id="pdt" style="width:100%;"
+                             value="#{paymentInfoQryAction.paymentInfoList}" var="record"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                             currentPageReportTemplate="共#{fn:length(paymentInfoQryAction.paymentInfoList)}笔明细"
+                             paginator="true" rows="15"
+                             paginatorPosition="bottom"
+                             rowsPerPageTemplate="100,50,30,15,5"
+                             emptyMessage="数据记录为空...">
+
+                    <p:column headerText="缴款书种类" style="text-align: left">
+                        <h:outputText value="#{record.pjzl}"/>
+                    </p:column>
+                    <p:column headerText="缴款书编号" style="text-align: left">
+                        <h:outputText value="#{record.jksbh}"/>
+                    </p:column>
+                    <p:column headerText="执收单位" style="text-align: left">
+                        <h:outputText value="#{record.wtzsdwmc}"/>
+                    </p:column>
+                    <p:column headerText="手工票标志" style="text-align: right">
+                        <h:outputText value="#{record.sgpbz}"/>
+                    </p:column>
+                    <p:column headerText="付款人" style="text-align: right">
+                        <h:outputText value="#{record.fkrmc}"/>
+                    </p:column>
+                    <p:column headerText="金额" style="text-align: right">
+                        <h:outputText value="#{record.zje}">
+                            <f:convertNumber pattern="###,###,##0.00"/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

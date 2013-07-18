@@ -1,0 +1,199 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/templates/ui.xhtml">
+    <ui:define name="head">
+        <style type="text/css">
+            .col-95 {
+                width: 95%;
+            }
+
+            .col-5 {
+                width: 5%;
+            }
+
+            .col-label {
+                width: 150px;
+                text-align: right;
+            }
+
+            .col-label2 {
+                /*padding-left: 80px;*/
+                width: 150px;
+                text-align: right;
+            }
+
+            .col-input {
+                /*width: 180px;*/
+                /*text-align: left;*/
+            }
+
+            .col-qry1 {
+                width: 80%;
+            }
+        </style>
+        <script language="JavaScript" type="text/JavaScript">
+            document.onkeydown = function TabReplace() {
+                if (event.keyCode == 13) {
+                    event.keyCode = 9;
+                }
+            }
+        </script>
+    </ui:define>
+    <ui:define name="content">
+        <div style="margin:5px">
+            <h:form id="form">
+                <p:focus for="voucherSn"/>
+                <p:growl id="msgs" showDetail="false"/>
+                <p:panel id="qryfields">
+                    <h:panelGrid columns="2" cellspacing="5">
+                        <h:panelGrid columns="1" cellspacing="5">
+                            <h:panelGrid columns="2" cellspacing="5" columnClasses="col-label,col-input">
+                                <h:outputLabel value="缴款书类型:" style="text-align: right;"/>
+                                <p:selectOneMenu value="#{paymentAction.vchType}" style="width: 459px;">
+                                    <f:selectItems value="#{paymentAction.payBillOptions}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <h:panelGrid id="inputVchTxn" columns="4" cellspacing="5" cellpadding="0"
+                                         columnClasses="col-label,col-input,col-label,col-input">
+                                <h:outputLabel value="缴款书编号:" style="text-align: right;"/>
+                                <p:inputText id="voucherSn" value="#{paymentAction.vchSn}"
+                                             disabled="#{paymentAction.checkPassed}"
+                                             required="true" requiredMessage="请输入缴款书编号！"/>
+                                <h:outputLabel value="校验码:" style="text-align: right;"/>
+                                <p:inputText value="#{paymentAction.paymentInfo.jym}"
+                                             disabled="#{!paymentAction.checkPassed}"/>
+                                <h:outputLabel value="缴款方式:" style="text-align: right;"/>
+                                <p:selectOneMenu value="#{paymentAction.paymentInfo.jkfs}" style="width: 150px;"
+                                                 disabled="#{!paymentAction.checkPassed}">
+                                    <f:selectItems value="#{paymentAction.payMethodOptions}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="付款人名称:"/>
+                                <p:inputText id="fkrmc" value="#{paymentAction.paymentInfo.fkrmc}"
+                                             disabled="#{!paymentAction.checkPassed}"/>
+                                <h:outputLabel value="付款人开户行:"/>
+                                <p:inputText id="fkrkhh" value="#{paymentAction.paymentInfo.fkrkhh}"
+                                             disabled="#{!paymentAction.checkPassed}"/>
+                                <h:outputLabel value="付款人账号:"/>
+                                <p:inputText id="fkrzh" value="#{paymentAction.paymentInfo.fkrzh}"
+                                             disabled="#{!paymentAction.checkPassed}"/>
+                                <h:outputLabel value="不明款业务序号:"/>
+                                <p:inputText id="bmk" value="#{paymentAction.paymentInfo.bmkywxh}"
+                                             disabled="#{!paymentAction.checkPassed}"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" cellspacing="5" cellpadding="0" style="margin-left: 300px;"
+                                     width="10%">
+                            <p:commandButton id="getbtn" style="width:100px;" value="查询"
+                                             action="#{paymentAction.onQuery}"
+                                             disabled="#{paymentAction.checkPassed}"
+                                             ajax="true"
+                                             update="fkrzh,fkrmc,fkrkhh,getbtn,actbtn,inputVchTxn,msgs,dataPanel,itemTable">
+                            </p:commandButton>
+                            <p:commandButton id="actbtn" style="width:100px;" value="缴款"
+                                             disabled="#{!paymentAction.checkPassed}"
+                                             action="#{paymentAction.onBookkeeping}"
+                                             ajax="true" update="getbtn,actbtn,inputVchTxn,msgs,dataPanel,itemTable">
+                            </p:commandButton>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </p:panel>
+                <p:ajaxStatus style="height:18px;text-align:center">
+                    <f:facet name="start">
+                        <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+                    </f:facet>
+                    <f:facet name="complete">
+                        <h:outputText value=""/>
+                    </f:facet>
+                </p:ajaxStatus>
+                <p:panel>
+                    <h:panelGrid id="dataPanel" columns="1" style="width: 100%;">
+                        <h:panelGrid columns="6" cellpadding="0" cellspacing="5" border="0" style="width:100%;"
+                                     columnClasses="col-label, col-input, col-label, col-input, col-label, col-input">
+                            <h:outputLabel value="票据种类:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.pjzl}"/>
+                            <h:outputLabel value="票据编号:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.jksbh}"/>
+                            <h:outputLabel value="行政区划:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.xzqh}"/>
+                            <h:outputLabel value="征收方式:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.zsfs}"/>
+                            <h:outputLabel value="填制日期:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.tzrq}">
+                                <f:convertDateTime pattern="yyyy-mm-dd"/>
+                            </h:outputText>
+                            <h:outputLabel value="委托执收单位编码:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.wtzsdwbm}"/>
+                            <h:outputLabel value="委托执收单位名称:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.wtzsdwmc}"/>
+                            <h:outputLabel value="委托单位主管部门编码:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.wtdwzgbmbm}"/>
+                            <h:outputLabel value="委托单位主管部门名称:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.wtdwzgbmmc}"/>
+                            <h:outputLabel value="受托执收单位编码:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.stzsdwbm}"/>
+                            <h:outputLabel value="受托执收单位名称:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.stzsdwmc}"/>
+                            <h:outputLabel value="委托征收标志:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.wtzsbz}"/>
+                            <h:outputLabel value="执收单位组织机构:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.zsdwzzjg}"/>
+                            <h:outputLabel value="受托单位主管部门编码:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.stdwzgbmbm}"/>
+                            <h:outputLabel value="受托单位主管部门名称:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.stdwzgbmmc}"/>
+                            <h:outputLabel value="收款人名称:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.skrmc}"/>
+                            <h:outputLabel value="收款人开户行:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.skrkhh}"/>
+                            <h:outputLabel value="收款人账号:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.skrzh}"/>
+                            <h:outputLabel value="总金额:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.zje}"/>
+                            <h:outputLabel value="手工票标志:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.sgpbz}"/>
+                            <h:outputLabel value="备注:"/>
+                            <h:outputText value="#{paymentAction.paymentInfo.bz}"/>
+
+                        </h:panelGrid>
+                        <p:separator/>
+                        <p:dataTable value="#{paymentAction.paymentItemList}" var="record" id="itemTable"
+                                     emptyMessage="数据记录为空...">
+                            <p:column headerText="项目顺序" style="text-align:center">
+                                <h:outputText value="#{record.xmsx}"/>
+                            </p:column>
+                            <p:column headerText="项目编号" style="text-align:center">
+                                <h:outputText value="#{record.srxmbm}"/>
+                            </p:column>
+                            <p:column headerText="项目名称" style="text-align:center">
+                                <h:outputText value="#{record.srxmmc}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="资金性质名称" style="text-align:center">
+                                <h:outputText value="#{record.zjxzmc}"/>
+                            </p:column>
+                            <p:column headerText="预算科目名称" style="text-align:center">
+                                <h:outputText value="#{record.yskmmc}"/>
+                            </p:column>
+                            <p:column headerText="收缴标准" style="text-align:center">
+                                <h:outputText value="#{record.sjbz}"/>
+                            </p:column>
+                            <p:column headerText="计量单位" style="text-align:center">
+                                <h:outputText value="#{record.jldw}"/>
+                            </p:column>
+                            <p:column headerText="数量" style="text-align:center">
+                                <h:outputText value="#{record.sl}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="金额" style="text-align:center">
+                                <h:outputText value="#{record.je}">
+                                    <f:convertNumber pattern="###,##0.00"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,121 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                template="/templates/ui.xhtml">
+
+    <ui:define name="head">
+        <style type="text/css">
+            .col-95 {
+                width: 95%;
+            }
+
+            .col-5 {
+                width: 5%;
+            }
+        </style>
+
+    </ui:define>
+
+    <ui:define name="content">
+        <div style="margin:5px;">
+            <h:form id="form">
+                <p:growl id="msgs" showDetail="false" life="1500"/>
+
+                <div id="header">
+                    <p:fieldset>
+                        <h:panelGrid columns="2" cellspacing="5" columnClasses="col-95,col-5">
+                            <h:panelGrid columns="4" cellspacing="5">
+                                <h:outputLabel value="起始日期:"/>
+                                <p:inputText id="startDate" value="#{depJoblogAction.startDate}"
+                                             required="true"
+                                             onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+                                <h:outputLabel value="截止日期:" style="margin-left: 20px;"/>
+                                <p:inputText id="endDate" value="#{depJoblogAction.endDate}"
+                                             required="true"
+                                             onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <p:commandButton id="qrybtn" style="width:90px;" value="查询"
+                                                 action="#{depJoblogAction.onQuery}"
+                                                 update="pdt,msgs">
+                                </p:commandButton>
+
+                                <p:commandButton ajax="false" id="btnExport" value="导出CSV"
+                                                 style="width:90px;">
+                                    <p:dataExporter type="csv" target="pdt" fileName="rpt_depJoblogs" encoding="GBK"
+                                                    pageOnly="false"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </p:fieldset>
+                </div>
+
+                <p:ajaxStatus style="height:20px;text-align:center">
+                    <f:facet name="start">
+                        <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+                    </f:facet>
+                    <f:facet name="complete">
+                        <h:outputText value=""/>
+                    </f:facet>
+                </p:ajaxStatus>
+
+                <p:dataTable id="pdt" style="width:100%;"
+                             value="#{depJoblogAction.detlList}" var="record"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+                             currentPageReportTemplate="{startRecord}-{endRecord} 共{totalRecords}笔"
+                             paginator="true" rows="15"
+                             paginatorPosition="bottom"
+                             rowsPerPageTemplate="100,50,30,15,5"
+                             emptyMessage="数据记录为空...">
+                    <p:column style="text-align:center" sortBy="#{record.jobuserid}">
+                        <f:facet name="header">
+                            操作员ID
+                        </f:facet>
+                        <h:outputText value="#{record.jobuserid}"/>
+                    </p:column>
+                    <p:column style="text-align:center" filterBy="#{record.jobusername}" filterMatchMode="contains">
+                        <f:facet name="header">
+                            操作员名称
+                        </f:facet>
+                        <h:outputText value="#{record.jobusername}"/>
+                    </p:column>
+                    <p:column style="text-align:center" sortBy="#{record.jobtime}">
+                        <f:facet name="header">
+                            操作日期
+                        </f:facet>
+                        <h:outputText value="#{record.jobtime}"/>
+                    </p:column>
+                    <p:column style="text-align:center" sortBy="#{record.jobcode}" filterBy="#{record.jobcode}"
+                              filterMatchMode="contains">
+                        <f:facet name="header">
+                            操作事件ID
+                        </f:facet>
+                        <h:outputText value="#{record.jobcode}"/>
+                    </p:column>
+                    <p:column style="text-align:center" filterBy="#{record.jobname}" filterMatchMode="contains">
+                        <f:facet name="header">
+                            操作事件名称
+                        </f:facet>
+                        <h:outputText value="#{record.jobname}"/>
+                    </p:column>
+                    <p:column style="text-align:center">
+                        <f:facet name="header">
+                            操作结果
+                        </f:facet>
+                        <h:outputText value="#{record.jobresult}"/>
+                    </p:column>
+                    <p:column style="text-align:center">
+                        <f:facet name="header">
+                            备注
+                        </f:facet>
+                        <h:outputText value="#{record.remark}"/>
+                    </p:column>
+
+                </p:dataTable>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

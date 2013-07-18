@@ -1,0 +1,277 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="/templates/ui.xhtml">
+
+<ui:define name="head">
+    <style type="text/css">
+        .col-label {
+            text-align: right;
+        }
+        .col-item {
+            text-align: right;
+            width: 125px;
+        }
+        .col-item2 {
+            text-align: right;
+            width: 191px;
+        }
+        .col-item3 {
+            text-align: right;
+            width: 200px;
+        }
+        .col-item-input {
+            text-align: left;
+        }
+    </style>
+    <script language="JavaScript" type="text/JavaScript">
+        document.onkeydown = function TabReplace() {
+            if (event.keyCode == 13) {
+                event.keyCode = 9;
+            }
+        }
+    </script>
+</ui:define>
+
+<ui:define name="content">
+<h:form id="form">
+<p:ajaxStatus style="height:18px;text-align:center">
+    <f:facet name="start">
+        <h:graphicImage value="/images/ajaxloadingbar.gif"/>
+    </f:facet>
+    <f:facet name="complete">
+        <h:outputText value=""/>
+    </f:facet>
+</p:ajaxStatus>
+<p:panel>
+    <p:focus for="voucherSn"/>
+    <p:growl id="msgs" showDetail="false" life="3000"/>
+    <h:panelGrid id="vchPanel" columns="4" cellpadding="0" cellspacing="5" border="0">
+        <h:outputLabel value="*票据编号:" style="text-align: right;margin-left: 81px;"/>
+        <p:inputText id="voucherSn" value="#{paymentAction.paymentInfo.jksbh}" required="true"
+                     requiredMessage="必须输入票据编号。"/>
+        <h:outputLabel value="票据种类:" style="text-align: right;margin-left: 140px;"/>
+        <p:selectOneMenu value="#{paymentAction.paymentInfo.pjzl}" style="width: 380px;" disabled="true">
+            <f:selectItems value="#{paymentAction.payBillOptions}"/>
+        </p:selectOneMenu>
+    </h:panelGrid>
+    <p:separator/>
+    <h:panelGrid id="dataPanel" columns="1" style="width: 100%;">
+        <h:panelGrid id="infoPanel" columns="6" cellpadding="0" cellspacing="5" border="0"
+                     style="width:100%;"
+                     columnClasses="col-label, col-item-input, col-label, col-item-input, col-label, col-item-input">
+            <h:outputLabel value="*征收方式:"/>
+            <p:selectOneMenu value="#{paymentAction.paymentInfo.zsfs}" style="width: 150px;">
+                <f:selectItems value="#{paymentAction.levyTypeOptions}"/>
+            </p:selectOneMenu>
+            <h:outputLabel value="*缴款方式:"/>
+            <p:selectOneMenu value="#{paymentAction.paymentInfo.jkfs}" style="width: 150px;">
+                <f:selectItems value="#{paymentAction.payMethodOptions}"/>
+            </p:selectOneMenu>
+            <h:outputLabel value="*委托征收标志:"/>
+            <p:selectOneMenu value="#{paymentAction.paymentInfo.wtzsbz}" style="width: 150px;" id="wtzsbz">
+                <f:selectItems value="#{paymentAction.entrustFlagOptions}"/>
+            </p:selectOneMenu>
+            <h:outputLabel value="*行政区划:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.xzqh}" readonly="true"/>
+            <h:outputLabel value="*填制日期:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.tzrq}" required="true"
+                         requiredMessage="必须输入填制日期。" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+            <h:outputLabel value="*委托执收单位编码:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.wtzsdwbm}" required="true"
+                         requiredMessage="必须输入委托执收单位编码">
+                <p:ajax event="blur" update="msgs,wtzsdwmc,stzsdwbm,stzsdwmc"
+                        listener="#{paymentAction.onQryWtdw}"/>
+            </p:inputText>
+            <h:outputLabel value="委托执收单位名称:"/>
+            <p:inputText id="wtzsdwmc" readonly="true" value="#{paymentAction.paymentInfo.wtzsdwmc}"/>
+            <h:outputLabel value="*受托执收单位编码:"/>
+            <p:inputText id="stzsdwbm" value="#{paymentAction.paymentInfo.stzsdwbm}" required="true"
+                         requiredMessage="必须输入受托执收单位编码">
+                <p:ajax event="blur" update="stzsdwmc,msgs"
+                        listener="#{paymentAction.onQryStdw}"/>
+            </p:inputText>
+            <h:outputLabel value="受托执收单位名称:"/>
+            <p:inputText id="stzsdwmc" readonly="true" value="#{paymentAction.paymentInfo.stzsdwmc}"/>
+            <h:outputLabel value="*付款人名称:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.fkrmc}" required="true"
+                         requiredMessage="必须输入付款人名称。"/>
+            <h:outputLabel value="*总金额:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.zje}" required="true" requiredMessage="必须输入金额">
+                <f:convertNumber pattern="###,###,##0.00"/>
+            </p:inputText>
+            <h:outputLabel value="行政审批大厅唯一码:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.xzspdtwym}"/>
+            <h:outputLabel value="执收单位组织机构:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.zsdwzzjg}"/>
+            <h:outputLabel value="付款人开户行:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.fkrkhh}"/>
+            <h:outputLabel value="付款人账号:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.fkrzh}"/>
+            <h:outputLabel value="缴款日期:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.yhskrq}" readonly="true"/>
+            <h:outputLabel value="备注:"/>
+            <p:inputText value="#{paymentAction.paymentInfo.bz}"/>
+        </h:panelGrid>
+    </h:panelGrid>
+</p:panel>
+
+<p:fieldset legend="缴款单具体缴费项目[按缴款书缴款项目明细录入]" style="width: 100%">
+    <br/>
+    <p:panel>
+        <h:panelGrid id="itemPanel1" columns="6" cellpadding="0" cellspacing="5" border="0"
+                     columnClasses="col-item, col-item-input, col-item2, col-item-input, col-item3, col-item-input">
+            <h:outputLabel value="项目顺序:"/>
+            <p:inputText value="#{paymentAction.item1.xmsx}" readonly="true"/>
+            <h:outputLabel value="项目编号:"/>
+            <p:inputText value="#{paymentAction.item1.srxmbm}">
+                <p:ajax event="blur" listener="#{paymentAction.onQryXmxx1}" update="srxmmc1,msgs,sjbz1,jldw1"/>
+            </p:inputText>
+            <h:outputLabel value="项目名称:"/>
+            <p:inputText id="srxmmc1" value="#{paymentAction.item1.srxmmc}" readonly="true"/>
+            <h:outputLabel value="收缴标准:"/>
+            <p:inputText value="#{paymentAction.item1.sjbz}" id="sjbz1" readonly="true"/>
+            <h:outputLabel value="计量单位:"/>
+            <p:inputText value="#{paymentAction.item1.jldw}" id="jldw1" readonly="true"/>
+            <h:outputLabel value="数量:"/>
+            <p:inputText value="#{paymentAction.item1.sl}"/>
+            <h:outputLabel value="金额:"/>
+            <p:inputText value="#{paymentAction.item1.je}">
+                <f:convertNumber pattern="###,##0.00"/>
+            </p:inputText>
+        </h:panelGrid>
+    </p:panel>
+    <br/>
+    <p:panel>
+        <h:panelGrid id="itemPanel2" columns="6" cellpadding="0" cellspacing="5" border="0"
+                     columnClasses="col-item, col-item-input, col-item2, col-item-input, col-item3, col-item-input">
+            <h:outputLabel value="项目顺序:"/>
+            <p:inputText value="#{paymentAction.item2.xmsx}" readonly="true"/>
+            <h:outputLabel value="项目编号:"/>
+            <p:inputText value="#{paymentAction.item2.srxmbm}">
+                <p:ajax event="blur" listener="#{paymentAction.onQryXmxx2}" update="srxmmc2,msgs,sjbz2,jldw2"/>
+            </p:inputText>
+            <h:outputLabel value="项目名称:"/>
+            <p:inputText id="srxmmc2" value="#{paymentAction.item2.srxmmc}" readonly="true"/>
+            <h:outputLabel value="收缴标准:"/>
+            <p:inputText value="#{paymentAction.item2.sjbz}" id="sjbz2" readonly="true"/>
+            <h:outputLabel value="计量单位:"/>
+            <p:inputText value="#{paymentAction.item2.jldw}" id="jldw2" readonly="true"/>
+            <h:outputLabel value="数量:"/>
+            <p:inputText value="#{paymentAction.item2.sl}"/>
+            <h:outputLabel value="金额:"/>
+            <p:inputText value="#{paymentAction.item2.je}">
+                <f:convertNumber pattern="###,##0.00"/>
+            </p:inputText>
+        </h:panelGrid>
+    </p:panel>
+    <br/>
+    <p:panel>
+        <h:panelGrid id="itemPanel3" columns="6" cellpadding="0" cellspacing="5" border="0"
+                     columnClasses="col-item, col-item-input, col-item2, col-item-input, col-item3, col-item-input">
+            <h:outputLabel value="项目顺序:"/>
+            <p:inputText value="#{paymentAction.item3.xmsx}" readonly="true"/>
+            <h:outputLabel value="项目编号:"/>
+            <p:inputText value="#{paymentAction.item3.srxmbm}">
+                <p:ajax event="blur" listener="#{paymentAction.onQryXmxx3}" update="srxmmc3,msgs,sjbz3,jldw3"/>
+            </p:inputText>
+            <h:outputLabel value="项目名称:"/>
+            <p:inputText id="srxmmc3" value="#{paymentAction.item3.srxmmc}" readonly="true"/>
+            <h:outputLabel value="收缴标准:"/>
+            <p:inputText value="#{paymentAction.item3.sjbz}" id="sjbz3" readonly="true"/>
+            <h:outputLabel value="计量单位:"/>
+            <p:inputText value="#{paymentAction.item3.jldw}" id="jldw3" readonly="true"/>
+            <h:outputLabel value="数量:"/>
+            <p:inputText value="#{paymentAction.item3.sl}"/>
+            <h:outputLabel value="金额:"/>
+            <p:inputText value="#{paymentAction.item3.je}">
+                <f:convertNumber pattern="###,##0.00"/>
+            </p:inputText>
+        </h:panelGrid>
+    </p:panel>
+    <br/>
+    <p:panel>
+        <h:panelGrid id="itemPanel4" columns="6" cellpadding="0" cellspacing="5" border="0"
+                     columnClasses="col-item, col-item-input, col-item2, col-item-input, col-item3, col-item-input">
+            <h:outputLabel value="项目顺序:"/>
+            <p:inputText value="#{paymentAction.item4.xmsx}" readonly="true"/>
+            <h:outputLabel value="项目编号:"/>
+            <p:inputText value="#{paymentAction.item4.srxmbm}">
+                <p:ajax event="blur" listener="#{paymentAction.onQryXmxx4}" update="srxmmc4,msgs,sjbz4,jldw4"/>
+            </p:inputText>
+            <h:outputLabel value="项目名称:"/>
+            <p:inputText id="srxmmc4" value="#{paymentAction.item4.srxmmc}" readonly="true"/>
+            <h:outputLabel value="收缴标准:"/>
+            <p:inputText value="#{paymentAction.item4.sjbz}" id="sjbz4" readonly="true"/>
+            <h:outputLabel value="计量单位:"/>
+            <p:inputText value="#{paymentAction.item4.jldw}" id="jldw4" readonly="true"/>
+            <h:outputLabel value="数量:"/>
+            <p:inputText value="#{paymentAction.item4.sl}"/>
+            <h:outputLabel value="金额:"/>
+            <p:inputText value="#{paymentAction.item4.je}">
+                <f:convertNumber pattern="###,##0.00"/>
+            </p:inputText>
+        </h:panelGrid>
+    </p:panel>
+    <br/>
+    <p:panel>
+        <h:panelGrid id="itemPanel5" columns="6" cellpadding="0" cellspacing="5" border="0"
+                     columnClasses="col-item, col-item-input, col-item2, col-item-input, col-item3, col-item-input">
+            <h:outputLabel value="项目顺序:"/>
+            <p:inputText value="#{paymentAction.item5.xmsx}" readonly="true"/>
+            <h:outputLabel value="项目编号:"/>
+            <p:inputText value="#{paymentAction.item5.srxmbm}">
+                <p:ajax event="blur" listener="#{paymentAction.onQryXmxx5}" update="srxmmc5,msgs,sjbz5,jldw5"/>
+            </p:inputText>
+            <h:outputLabel value="项目名称:"/>
+            <p:inputText id="srxmmc5" value="#{paymentAction.item5.srxmmc}" readonly="true"/>
+            <h:outputLabel value="收缴标准:"/>
+            <p:inputText value="#{paymentAction.item5.sjbz}" id="sjbz5" readonly="true"/>
+            <h:outputLabel value="计量单位:"/>
+            <p:inputText value="#{paymentAction.item5.jldw}" id="jldw5" readonly="true"/>
+            <h:outputLabel value="数量:"/>
+            <p:inputText value="#{paymentAction.item5.sl}"/>
+            <h:outputLabel value="金额:"/>
+            <p:inputText value="#{paymentAction.item5.je}">
+                <f:convertNumber pattern="###,##0.00"/>
+            </p:inputText>
+        </h:panelGrid>
+    </p:panel>
+    <br/>
+    <p:panel>
+        <h:panelGrid id="itemPanel6" columns="6" cellpadding="0" cellspacing="5" border="0"
+                     columnClasses="col-item, col-item-input, col-item2, col-item-input, col-item3, col-item-input">
+            <h:outputLabel value="项目顺序:"/>
+            <p:inputText value="#{paymentAction.item6.xmsx}" readonly="true"/>
+            <h:outputLabel value="项目编号:"/>
+            <p:inputText value="#{paymentAction.item6.srxmbm}">
+                <p:ajax event="blur" listener="#{paymentAction.onQryXmxx6}" update="srxmmc6,msgs,sjbz6,jldw6"/>
+            </p:inputText>
+            <h:outputLabel value="项目名称:"/>
+            <p:inputText id="srxmmc6" value="#{paymentAction.item6.srxmmc}" readonly="true"/>
+            <h:outputLabel value="收缴标准:"/>
+            <p:inputText value="#{paymentAction.item6.sjbz}" id="sjbz6" readonly="true"/>
+            <h:outputLabel value="计量单位:"/>
+            <p:inputText value="#{paymentAction.item6.jldw}" id="jldw6" readonly="true"/>
+            <h:outputLabel value="数量:"/>
+            <p:inputText value="#{paymentAction.item6.sl}"/>
+            <h:outputLabel value="金额:"/>
+            <p:inputText value="#{paymentAction.item6.je}">
+                <f:convertNumber pattern="###,##0.00"/>
+            </p:inputText>
+        </h:panelGrid>
+    </p:panel>
+</p:fieldset>
+<p:separator/>
+<h:panelGrid columns="1" style="width: 100%">
+    <p:commandButton id="paybtn" style="text-align: center;width: 180px;margin-left: 500px;"
+                     action="#{paymentAction.onWBookkeeping}"
+                     value="确认缴款" disabled="#{paymentAction.payed}" update="msgs,paybtn"/>
+</h:panelGrid>
+</h:form>
+</ui:define>
+</ui:composition>

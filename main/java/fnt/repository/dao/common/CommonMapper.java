@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public interface CommonMapper {
 
-    @Select("select info.wtzsdwbm,info.wtzsdwmc,item.srxmbm, item.srxmmc, " +
+    /*@Select("select info.wtzsdwbm,info.wtzsdwmc,item.srxmbm, item.srxmmc, " +
             " item.yskmbm, item.yskmmc, info.pending_flag as pendingflag, item.zjxzbm, " +
             " item.zjxzmc, item.je as zje, sifo.hrxzqh as hrxzqh, sifo.fcje as fcje " +
             " from fs_qdf_payment_item item" +
@@ -23,7 +23,50 @@ public interface CommonMapper {
             " left join fs_qdf_share_info sifo" +
             " on item.pjzl = sifo.pjzl" +
             " and item.jksbh = sifo.jksbh" +
-            " and substr(item.srxmbm,1,8) = sifo.hcxmbm where info.chk_act_dt = #{date8}")
+            " and substr(item.srxmbm,1,8) = sifo.hcxmbm where info.chk_act_dt = #{date8}")*/
+    @Select(" select wtzsdwbm," +
+            "       wtzsdwmc," +
+            "       srxmbm," +
+            "       srxmmc," +
+            "       yskmbm," +
+            "       yskmmc," +
+            "       sum(je) as zje," +
+            "       pendingflag," +
+            "       zjxzbm," +
+            "       zjxzmc," +
+            "       hrxzqh," +
+            "       sum(fcje) as fcje" +
+            "  from (select info.wtzsdwbm," +
+            "               info.wtzsdwmc," +
+            "               item.srxmbm," +
+            "               item.srxmmc," +
+            "               item.yskmbm," +
+            "               item.yskmmc," +
+            "               info.pending_flag as pendingflag," +
+            "               item.zjxzbm," +
+            "               item.zjxzmc," +
+            "               item.je," +
+            "               sifo.hrxzqh," +
+            "               sifo.fcje" +
+            "          from fs_qdf_payment_item item" +
+            "          left join fs_qdf_payment_info info" +
+            "            on info.pjzl = item.pjzl" +
+            "           and info.jksbh = item.jksbh" +
+            "          left join fs_qdf_share_info sifo" +
+            "            on item.pjzl = sifo.pjzl" +
+            "           and item.jksbh = sifo.jksbh" +
+            "           and substr(item.srxmbm, 1, 8) = sifo.hcxmbm" +
+            "         where info.chk_act_dt = #{date8})" +
+            "  group by wtzsdwbm," +
+            "          wtzsdwmc," +
+            "          srxmbm," +
+            "          srxmmc," +
+            "          yskmbm," +
+            "          yskmmc," +
+            "          pendingflag," +
+            "          zjxzbm," +
+            "          zjxzmc," +
+            "          hrxzqh")
     List<DayGatherData> qryDayGatherDataByDate(@Param("date8") String date8);
 
     @Select(" select t.XZQH, t.BMKYWXH, CZZHZH, t.JKFS, YT, JE, JYRQ, TXAC_BRID as txacBrid, " +

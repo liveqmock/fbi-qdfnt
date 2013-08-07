@@ -85,7 +85,7 @@ public class DayGatherRptAction implements Serializable {
                     record.setIncomeProperty("正常收入");
                     totalVchBDIncome = totalVchBDIncome.add(record.getZje());
                 }
-                if ("01".equals(data.getZjxzbm())) {                                     // 01-预算内
+                if ("01".equals(data.getZjxzbm()) || "1".equals(data.getZjxzbm())) {                                     // 01-预算内
                     record.setBudgetItemAmt(df.format(record.getZje()));
                     BigDecimal bjAmt = record.getZje();
                     if ("000000".equals(data.getHrxzqh())) {                             // 上缴中央

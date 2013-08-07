@@ -35,10 +35,10 @@ public class CommonService {
         FsQdfShareInfoExample example = new FsQdfShareInfoExample();
         example.createCriteria().andApplyDateEqualTo(date10);
         // 如果没有获取分成信息
-        if (shareInfoMapper.countByExample(example) <= 0) {
+       /* if (shareInfoMapper.countByExample(example) <= 0) {
             boolean isGetShareInfos = depService.txn1533028(date10);
             if (!isGetShareInfos) throw new RuntimeException("获取分成信息失败.");
-        }
+        }*/
         return commonMapper.qryDayGatherDataByDate(date8);
     }
 

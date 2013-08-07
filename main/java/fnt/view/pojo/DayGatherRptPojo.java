@@ -23,21 +23,21 @@ public class DayGatherRptPojo {
 
     private String zjxzbm;            // 资金性质编码
     private String zjxzmc;            // 资金性质名称
-    private BigDecimal zje;            // 金额
+    private BigDecimal zje = new BigDecimal("0.00");            // 金额
 
-    private String totalAmt;          // 合计
-    private String budgetItemAmt;           // 预算内小计
-    private String budgetCentreAmt;         // 预算内应缴中央
-    private String budgetProvinceAmt;       // 预算内应缴省
-    private String budgetCityAmt;           // 预算内本级收入
+    private String totalAmt = "0.00";          // 合计
+    private String budgetItemAmt = "0";           // 预算内小计
+    private String budgetCentreAmt = "0";         // 预算内应缴中央
+    private String budgetProvinceAmt = "0";       // 预算内应缴省
+    private String budgetCityAmt = "0";           // 预算内本级收入
 
-    private String fundItemAmt;           // 财政专户小计
-    private String fundCentreAmt;         // 财政专户应缴中央
-    private String fundProvinceAmt;       // 财政专户应缴省
-    private String fundCityAmt;           // 财政专户本级收入
+    private String fundItemAmt = "0";           // 财政专户小计
+    private String fundCentreAmt = "0";         // 财政专户应缴中央
+    private String fundProvinceAmt = "0";       // 财政专户应缴省
+    private String fundCityAmt = "0";           // 财政专户本级收入
 
     private String hrxzqh;            // 划入区划 [中央、省]
-    private BigDecimal fcje;          // 分成金额
+    private BigDecimal fcje = new BigDecimal("0");          // 分成金额
 
     public String getWtzsdwbm() {
         return wtzsdwbm;
